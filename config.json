@@ -1,0 +1,23 @@
+{
+    "request_rate_limit": 4,
+    "findip": {
+        "enabled": true,
+        "api_key": "YOUR_FINDIP_API_KEY",
+        "endpoint": "https://api.findip.net/{}/?token={}"
+    },
+    "virustotal": {
+        "enabled": true,
+        "api_key": "YOUR_VT_API_KEY",
+        "endpoint": "https://www.virustotal.com/api/v3/ip_addresses/{ip}"
+    },
+    "shodan": {
+        "enabled": true,
+        "api_key": "YOUR_SHODAN_API_KEY",
+        "endpoint": "https://api.shodan.io/shodan/host/{ip}"
+    },
+    "abuseipdb": {
+        "enabled": true,
+        "api_key": "YOUR_ABUSEIPDB_API_KEY",
+        "endpoint": "https://api.abuseipdb.com/api/v2/check"
+    }
+}
