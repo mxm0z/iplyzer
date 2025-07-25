@@ -1,4 +1,3 @@
-import requests
 import asyncio
 import aiohttp
 import json
@@ -7,7 +6,6 @@ import argparse
 import os
 import random
 import string
-import time
 from typing import List, Dict
 
 class IPAnalysisTool:
@@ -212,7 +210,7 @@ class IPAnalysisTool:
             print(f"Analyzing IP: {ip}")
             results.append(await self.analyze_ip(ip))
             print(f"Sleeping for {self.time_between_requests} seconds to respect rate limit")
-            time.sleep(self.time_between_requests)  # Respect rate limit for requests
+            await asyncio.sleep(self.time_between_requests)  # Respect rate limit for requests
         print("IP analysis completed.")
         return results
 
