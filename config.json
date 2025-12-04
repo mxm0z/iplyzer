@@ -1,23 +1,30 @@
 {
     "request_rate_limit": 4,
+    "ssl_verify": true,
+    "default_timeout": 30,
     "findip": {
         "enabled": true,
         "api_key": "YOUR_FINDIP_API_KEY",
-        "endpoint": "https://api.findip.net/{}/?token={}"
+        "endpoint": "https://api.findip.net/{ip}/?token={api_key}",
+        "timeout": 30
     },
     "virustotal": {
         "enabled": true,
-        "api_key": "YOUR_VT_API_KEY",
-        "endpoint": "https://www.virustotal.com/api/v3/ip_addresses/{ip}"
+        "api_key": "YOUR_VIRUSTOTAL_API_KEY",
+        "endpoint": "https://www.virustotal.com/api/v3/ip_addresses/{ip}",
+        "timeout": 30
     },
     "shodan": {
         "enabled": true,
         "api_key": "YOUR_SHODAN_API_KEY",
-        "endpoint": "https://api.shodan.io/shodan/host/{ip}"
+        "endpoint": "https://api.shodan.io/shodan/host/{ip}",
+        "timeout": 30
     },
     "abuseipdb": {
         "enabled": true,
         "api_key": "YOUR_ABUSEIPDB_API_KEY",
-        "endpoint": "https://api.abuseipdb.com/api/v2/check"
+        "endpoint": "https://api.abuseipdb.com/api/v2/check",
+        "timeout": 30,
+        "max_age_days": 90
     }
 }

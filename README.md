@@ -1,123 +1,154 @@
-# IPlyzer CLI Tool
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3.11+-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/async-parallel-green?style=for-the-badge" alt="Async">
+  <img src="https://img.shields.io/badge/license-MIT-orange?style=for-the-badge" alt="MIT License">
+</p>
 
-A simple Command Line Interface (CLI) tool for analyzing IP addresses across multiple data sources. The **IPlyzer CLI Tool** provides in-depth information regarding given IP addresses, integrating with popular services such as **VirusTotal**, **Shodan**, **AbuseIPDB**, and **FindIP**. This tool is designed to aid in cybersecurity research, threat intelligence, and investigation of IP addresses, providing both a summary and detailed output as needed.
+<h1 align="center">iplyzer</h1>
 
-## Key Features
+<p align="center">
+  <b>Fast, async IP enrichment for threat intelligence</b><br>
+  Query VirusTotal, Shodan, AbuseIPDB & FindIP in parallel
+</p>
 
-- **Multi-Source Integration**: Fetches IP details from multiple services such as **VirusTotal**, **Shodan**, **AbuseIPDB**, and **FindIP**.
-- **Asynchronous Requests**: Makes use of Python's asyncio library to perform concurrent lookups, ensuring efficient data collection.
-- **Flexible Output Options**:
-  - Outputs parsed results directly in the terminal for single IPlyzer.
-  - Generates CSV reports for bulk analysis, enabling easy sharing and further analysis.
-- **Custom Rate Limiting**: Configure request rate limits to avoid hitting API request caps.
-- **Customizable Configuration**: All API endpoints and keys are configurable via `config.json`, making the tool highly adaptable to individual use cases.
+---
 
-## Table of Contents
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Command Line Arguments](#command-line-arguments)
-  - [Example Commands](#example-commands)
-- [Configuration](#configuration)
-- [API Integrations](#api-integrations)
-- [Output](#output)
-- [Contributing](#contributing)
-- [Contact](#contact)
-- [License](#license)
+## Quick Start
 
-## Installation
+```bash
+pip install -r requirements.txt
 
-1. **Clone the Repository**:
-   ```sh
-   git clone https://github.com/mxm0z/iplyzer
-   cd iplyzer
-   ```
+# Add your API keys to config.json, then:
+python iplyzer.py -i 8.8.8.8
+```
 
-2. **Install Dependencies**:
-   This project requires Python 3.7 or above. Use `pip` to install the necessary dependencies:
-   ```sh
-   pip install aiohttp requests
-   ```
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| **Parallel Queries** | All 4 APIs queried simultaneously per IP |
+| **Rich Output** | Beautiful terminal tables with status indicators |
+| **Multiple Formats** | Terminal, CSV, or JSON export |
+| **Rate Limiting** | Configurable to respect API limits |
+| **Flexible Input** | Single IP, comma-separated, or file |
+| **Error Resilient** | Continues even if some APIs fail |
 
 ## Usage
 
-The **IPlyzer CLI Tool** can be used to analyze IP addresses either from a file or from command line arguments.
+```bash
+# Single IP → terminal output
+python iplyzer.py -i 8.8.8.8
 
-### Command Line Arguments
-- `-i, --ips`: List of IP addresses or a path to a file containing IPs (one per line). This argument is **required**.
-- `-c, --config`: Path to the configuration JSON file containing API keys and endpoints. Defaults to `config.json`.
-- `-o, --output`: Output CSV file name for bulk analysis. If not specified, it generates a file named `report_{random}.csv`.
+# Multiple IPs → CSV
+python iplyzer.py -i "1.1.1.1,8.8.8.8" -o results.csv
 
-### Example Commands
+# From file → JSON
+python iplyzer.py -i targets.txt --json -o results.json
 
-1. **Analyze a Single IP Address**:
-   ```sh
-   python iplyzer.py -i 8.8.8.8
-   ```
-   This will output the parsed result directly to the terminal.
+# Debug mode
+python iplyzer.py -i 8.8.8.8 -v
+```
 
-2. **Analyze Multiple IPs from a File**:
-   ```sh
-   python iplyzer.py -i ip_list.txt -o output_report.csv
-   ```
-   This will save the analysis results to `output_report.csv`.
+### Options
+
+```
+-i, --ips       IP address, list, or file (required)
+-o, --output    Output file path
+-c, --config    Config file (default: config.json)
+--json          Export as JSON instead of CSV
+-v, --verbose   Debug logging
+--version       Show version
+```
+
+## Example Output
+
+```
+                    IP Analysis Results: 8.8.8.8
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Field                      ┃ Value                                    ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ City                       │ Mountain View                            │
+│ Country                    │ United States                            │
+│ Isp                        │ Google LLC                               │
+│ Asn                        │ 15169                                    │
+│ Open Ports                 │ 443/tcp 53/tcp                           │
+│ Virustotal Community Score │ 527                                      │
+│ Abuseipdb Reports          │ 159                                      │
+└────────────────────────────┴──────────────────────────────────────────┘
+
+API Status Summary:
+  FindIP: OK
+  VirusTotal: OK
+  Shodan: OK
+  AbuseIPDB: OK
+```
 
 ## Configuration
 
-The tool requires API keys for multiple services, specified in a `config.json` file. Below is an example configuration:
+Edit `config.json` with your API keys:
 
 ```json
 {
     "request_rate_limit": 4,
+    "ssl_verify": true,
     "findip": {
         "enabled": true,
-        "api_key": "YOUR_FINDIP_API_KEY",
-        "endpoint": "https://api.findip.net/{}/?token={}"
+        "api_key": "YOUR_KEY",
+        "timeout": 30
     },
     "virustotal": {
         "enabled": true,
-        "api_key": "YOUR_VIRUSTOTAL_API_KEY",
-        "endpoint": "https://www.virustotal.com/api/v3/ip_addresses/{ip}"
+        "api_key": "YOUR_KEY",
+        "timeout": 30
     },
     "shodan": {
         "enabled": true,
-        "api_key": "YOUR_SHODAN_API_KEY",
-        "endpoint": "https://api.shodan.io/shodan/host/{ip}"
+        "api_key": "YOUR_KEY",
+        "timeout": 30
     },
     "abuseipdb": {
         "enabled": true,
-        "api_key": "YOUR_ABUSEIPDB_API_KEY",
-        "endpoint": "https://api.abuseipdb.com/api/v2/check"
+        "api_key": "YOUR_KEY",
+        "timeout": 30
     }
 }
 ```
 
-Ensure you replace the placeholder `YOUR_API_KEY` with actual API keys.
+Set `"enabled": false` to disable any API you don't have keys for.
 
-## API Integrations
+## API Sources
 
-1. **VirusTotal**: Provides detailed analysis and detection information from multiple security vendors.
-2. **Shodan**: Offers insights into open ports and potential services running on the IP.
-3. **AbuseIPDB**: Lists the number of times the IP has been reported for abuse, along with a confidence score.
-4. **FindIP**: Provides geographical information, ISP, ASN, and user type.
+| Service | Data | Free Tier |
+|---------|------|-----------|
+| [FindIP](https://findip.net) | Geolocation, ISP, ASN | 10k/month |
+| [VirusTotal](https://virustotal.com) | Threat detections, reputation | 500/day |
+| [Shodan](https://shodan.io) | Open ports, services | Limited |
+| [AbuseIPDB](https://abuseipdb.com) | Abuse reports, confidence score | 1k/day |
 
-## Output
+## Output Fields
 
-- For **single IP** analysis, the results are printed directly in the terminal, providing quick insights.
-- For **multiple IPs**, the results are saved to a CSV file. The CSV contains columns such as IP, City, Country, ISP, ASN, VirusTotal Detections, Open Ports, AbuseIPDB Reports, etc.
+| Field | Source |
+|-------|--------|
+| `city`, `country`, `coordinates` | FindIP |
+| `isp`, `asn`, `organization` | FindIP |
+| `user_type`, `connection_type` | FindIP |
+| `virustotal_detections` | VirusTotal |
+| `virustotal_community_score` | VirusTotal |
+| `open_ports` | Shodan |
+| `abuseipdb_reports` | AbuseIPDB |
+| `abuseipdb_confidence_score` | AbuseIPDB |
 
-## Contributing
+## Requirements
 
-Contributions are welcome! If you would like to contribute to this project:
+- Python 3.11+
+- httpx
+- pydantic
+- rich
 
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature-branch-name`).
-3. Commit your changes (`git commit -m 'Add a feature'`).
-4. Push to the branch (`git push origin feature-branch-name`).
-5. Open a Pull Request.
+## License
 
-## Contact
+MIT
 
-If you have any questions, feel free to reach out:
+## Author
 
-- **GitHub**: [mxm0z](https://github.com/mxm0z)
-- **Email**: gthb.c50d7@passmail.net
+[@mxm0z](https://github.com/mxm0z)
